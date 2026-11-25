@@ -13,10 +13,8 @@
     <link rel="preload" as="font" type="font/woff2" href="./assets/fonts/dm-sans.woff2" crossorigin />
     <link rel="stylesheet" href="./styles.css" />
     <script type="module" src="./app.js"></script>
-    <!-- assistant-only -->
     <link rel="stylesheet" href="./sql-assistant.css" />
     <script type="module" src="./sql-assistant.js"></script>
-    <!-- /assistant-only -->
   </head>
   <body>
     <a href="#main" class="skip">Skip to workspace</a>
@@ -99,16 +97,16 @@
               <p id="page-description">Explore and query files on your machine.</p>
             </div>
             <div class="page-actions">
-              <!-- assistant-only -->
               <button
                 type="button"
-                id="ask-chatgpt"
+                id="ask-assistant"
                 class="button assistant-trigger"
                 aria-haspopup="dialog"
+                aria-controls="sql-assistant"
+                hidden
               >
-                <i data-icon="sparkles"></i>Ask ChatGPT
+                <i data-icon="sparkles"></i><span>Ask <span data-chat-name></span></span>
               </button>
-              <!-- /assistant-only -->
               <button class="button primary" data-act="import">
                 <i data-icon="plus"></i>Import files
               </button>
@@ -284,11 +282,10 @@
     </div>
     <div id="toast" role="status" hidden></div>
     <dialog id="dialog"><div class="dialog-inner" id="dialog-body"></div></dialog>
-    <!-- assistant-only -->
-    <dialog id="sql-assistant" aria-labelledby="assistant-title">
+    <dialog id="sql-assistant" aria-labelledby="assistant-title" data-assistant-provider="chatgpt">
       <div class="assistant-heading">
         <span class="assistant-mark"><i data-icon="sparkles"></i></span>
-        <h2 id="assistant-title">Ask ChatGPT</h2>
+        <h2 id="assistant-title">Ask <span data-chat-name></span></h2>
         <button type="button" class="icon-button" id="assistant-close" aria-label="Close SQL assistant">
           <i data-icon="x"></i>
         </button>
@@ -337,13 +334,13 @@
         <p class="assistant-privacy">
           <i data-icon="shield"></i
           ><span
-            >The prompt includes your question and the selected table names, column names, and types.
-            Data rows stay in Mallard.</span
+            >Paste the prompt into your own <span data-chat-name></span> chat. It includes your
+            question and the selected table names, column names, and types. Data rows stay in Mallard.</span
           >
         </p>
         <div class="assistant-footer">
-          <button type="submit" class="button primary" id="launch-chatgpt">
-            Copy prompt &amp; open ChatGPT<i data-icon="arrow-up-right"></i>
+          <button type="submit" class="button primary" id="launch-assistant">
+            <span>Copy prompt &amp; open <span data-chat-name></span></span><i data-icon="arrow-up-right"></i>
           </button>
         </div>
       </form>
@@ -354,11 +351,11 @@
             <button type="button" class="text-button" id="copy-prepared">Copy prompt again</button>
             <a
               class="text-button"
-              href="https://chatgpt.com/"
+              id="assistant-chat-link"
               target="_blank"
               rel="noopener noreferrer"
               referrerpolicy="no-referrer"
-              >Open ChatGPT<i data-icon="arrow-up-right"></i
+              ><span>Open <span data-chat-name></span></span><i data-icon="arrow-up-right"></i
             ></a>
           </div>
           <textarea
@@ -370,12 +367,12 @@
             hidden
           ></textarea>
         </div>
-        <label class="assistant-label" for="assistant-answer">SQL from ChatGPT</label>
+        <label class="assistant-label" for="assistant-answer">SQL from <span data-chat-name></span></label>
         <textarea
           class="assistant-input assistant-code"
           id="assistant-answer"
           rows="6"
-          placeholder="Paste a SQL query or a ChatGPT reply with one SQL code block…"
+          placeholder="Paste a SQL query or a reply with one SQL code block…"
           spellcheck="false"
           autocapitalize="off"
           required
@@ -392,7 +389,6 @@
         </div>
       </form>
     </dialog>
-    <!-- /assistant-only -->
     <input
       id="file-input"
       type="file"
