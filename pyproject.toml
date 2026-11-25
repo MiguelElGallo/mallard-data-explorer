@@ -1,0 +1,25 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mallard-data-explorer"
+version = "0.1.0"
+description = "A browser-local DuckDB workspace with optional GitHub Copilot SQL drafting"
+requires-python = ">=3.11"
+dependencies = [
+  "cryptography>=44,<51",
+  "fastapi>=0.115,<1",
+  "github-copilot-sdk==1.0.35",
+  "httpx>=0.28,<1",
+  "pydantic>=2.11,<3",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["mallard_cloud"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"dist" = "mallard_cloud/static"
+
+[tool.hatch.build.targets.sdist]
+include = ["/mallard_cloud", "/dist", "/pyproject.toml", "/README.md"]

@@ -1,6 +1,6 @@
 # Mallard data explorer
 
-[Open Mallard on GitHub Pages](https://miguelelgallo.github.io/mallard-data-explorer/)
+[Open the local explorer on GitHub Pages](https://miguelelgallo.github.io/mallard-data-explorer/) · [Open Mallard with Copilot](https://neoquack.fastapicloud.dev/mallard/)
 
 Explore files from your computer with DuckDB-Wasm. Drop a Parquet, CSV, TSV, JSON, JSONL, NDJSON, or DuckDB file into the browser. Use the preview to sort and filter rows, inspect column types and value distributions, or write SQL to join several files and export the results as CSV. DuckDB databases open read-only.
 
@@ -19,7 +19,11 @@ Open [the local explorer](http://127.0.0.1:8000/). An HTTP server lets the brows
 
 ## GitHub Copilot
 
-Choose **Sign in to GitHub Copilot** to open GitHub in a new tab and continue to Copilot with your own account. Your conversation and Copilot’s replies stay on GitHub. The link sends no files, table schemas, or SQL to GitHub. Exploring files and running SQL in Mallard works without signing in. [GitHub Copilot Chat](https://docs.github.com/en/copilot/how-tos/copilot-on-github/chat-with-copilot/chat-in-github)
+In the hosted workspace, choose **Ask Copilot**, then **Sign in with GitHub**. Select the table schemas to share, enter a question and choose **Draft SQL**. Review the suggestion in the editor and choose **Run query** when ready. GitHub applies its Copilot eligibility, organization policies and usage limits to the signed-in visitor. [GitHub Copilot SDK authentication](https://docs.github.com/en/copilot/how-tos/copilot-sdk/setup/github-oauth)
+
+The browser sends your question and the chosen table names, column names and types. Imported files, row values and query results stay in your tab. The app uses encrypted, HTTP-only, path-scoped cookies that expire within one hour. The Pages button opens the hosted workspace in a new tab. Import files in the workspace where you plan to query them.
+
+To host the assistant, install this repository as a Python package and mount `mallard_cloud.app.create_app()` at `/mallard` in FastAPI. Set `MALLARD_PUBLIC_URL` to the full public address ending in `/mallard` and register `MALLARD_PUBLIC_URL/auth/github/callback` as the GitHub user authorization callback. Set `MALLARD_GITHUB_CLIENT_ID`, `MALLARD_GITHUB_CLIENT_SECRET`, and `MALLARD_SESSION_KEY` in your host’s environment. Generate the session key with `cryptography.fernet.Fernet.generate_key()`. Keep the client secret and session key in the host’s secret store. The SDK downloads its pinned runtime on first use.
 
 The Sites edition includes **Ask ChatGPT**. Choose the tables to include, copy the prepared prompt into your own ChatGPT window, and bring the SQL draft back to the editor for review. To run that edition locally, serve `dist/` in place of `build/pages`.
 
