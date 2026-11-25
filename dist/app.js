@@ -789,4 +789,4 @@ async function initialize() {
     drawSources();
   }
 }
-const initialization = initialize();
+export const initialization = initialize();

@@ -1,0 +1,29 @@
+<dialog id="sql-assistant" aria-labelledby="cloud-title">
+  <div class="assistant-heading">
+    <span class="assistant-mark"><i data-icon="sparkles"></i></span>
+    <h2 id="cloud-title">Ask Copilot</h2>
+    <button class="icon-button" id="cloud-close" aria-label="Close SQL assistant"><i data-icon="x"></i></button>
+  </div>
+  <form class="assistant-panel" id="cloud-form">
+    <label class="assistant-label" for="cloud-question">What would you like to explore?</label>
+    <textarea class="assistant-input" id="cloud-question" rows="3" maxlength="4000" placeholder="Which routes have the longest average delay?" required></textarea>
+    <details class="assistant-details">
+      <summary><i data-icon="database"></i><span>Table schemas</span><small id="cloud-count"></small><i data-icon="chevron-right"></i></summary>
+      <fieldset id="cloud-tables" aria-label="Tables to share with Copilot"></fieldset>
+    </details>
+    <p class="assistant-privacy"><i data-icon="shield"></i><span>Copilot receives your question and the selected table names, column names, and types. File contents and result rows stay in this tab. Requests use your GitHub Copilot allowance.</span></p>
+    <p class="assistant-privacy" id="cloud-account"></p>
+    <p id="cloud-status" role="status" class="assistant-error"></p>
+    <div class="assistant-footer" style="gap: 8px; flex-wrap: wrap">
+      <button class="button subtle" type="button" id="cloud-signout" hidden>Sign out</button>
+      <a class="button primary" id="cloud-signin" href="./auth/github" target="_blank" rel="noopener noreferrer" hidden>Sign in with GitHub<i data-icon="arrow-up-right"></i></a>
+      <button class="button primary" type="submit" id="cloud-generate" hidden>Draft SQL<i data-icon="sparkles"></i></button>
+    </div>
+    <section class="assistant-handoff" id="cloud-result" hidden>
+      <strong id="cloud-result-heading"></strong>
+      <p id="cloud-clarification" hidden></p>
+      <textarea class="assistant-code" rows="7" id="cloud-sql" aria-label="SQL draft" readonly hidden></textarea>
+      <div class="assistant-footer"><button type="button" class="button primary" id="cloud-use" hidden>Review in SQL editor<i data-icon="chevron-right"></i></button></div>
+    </section>
+  </form>
+</dialog>
