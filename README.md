@@ -17,17 +17,15 @@ python3 -m http.server 8000 --bind 127.0.0.1 --directory build/pages
 
 Open [the local explorer](http://127.0.0.1:8000/). An HTTP server lets the browser load ES modules and the DuckDB worker.
 
-## Draft SQL with GitHub Copilot
+## GitHub Copilot
 
-On GitHub Pages, choose **Ask Copilot**, enter a question, and select the tables Copilot should know about. **Preview prompt** shows the exact text, including table names, column names, and types. File contents and result rows stay in Mallard.
+Choose **Sign in to GitHub Copilot** to open GitHub in a new tab and continue to Copilot with your own account. Your conversation and Copilot’s replies stay on GitHub. The link sends no files, table schemas, or SQL to GitHub. Exploring files and running SQL in Mallard works without signing in. [GitHub Copilot Chat](https://docs.github.com/en/copilot/how-tos/copilot-on-github/chat-with-copilot/chat-in-github)
 
-Choose **Copy prompt & open Copilot**. In the new window, paste the prompt and send it from your own GitHub account with Copilot access. Back in Mallard, choose **Paste SQL**, paste the reply, and select **Use in SQL editor**. Review the draft and choose **Run query** to execute it locally. Exploring files and writing SQL yourself works without a GitHub account. [Chatting with GitHub Copilot](https://docs.github.com/en/copilot/how-tos/copilot-on-github/chat-with-copilot/chat-in-github)
-
-The Sites edition offers the same workflow with **Ask ChatGPT**. To run that edition locally, serve `dist/` in place of `build/pages`. Both editions open the visitor’s own chat and require no application API key.
+The Sites edition includes **Ask ChatGPT**. Choose the tables to include, copy the prepared prompt into your own ChatGPT window, and bring the SQL draft back to the editor for review. To run that edition locally, serve `dist/` in place of `build/pages`.
 
 ## Publish on GitHub Pages
 
-Select **GitHub Actions** under the repository’s **Settings → Pages**. Pushing to `main` runs the included workflow, which builds the Copilot edition and publishes `build/pages/`.
+Select **GitHub Actions** under the repository’s **Settings → Pages**. Pushing to `main` runs the included workflow and publishes the static explorer from `build/pages/`.
 
 ## Runtime and credits
 

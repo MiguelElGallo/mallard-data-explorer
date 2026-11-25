@@ -1,10 +1,7 @@
 import { escape, formatNumber } from './view.js';
 import { getSQLContext, reviewSQLDraft } from './app.js';
 
-const providers = {
-  chatgpt: { name: 'ChatGPT', url: 'https://chatgpt.com/' },
-  copilot: { name: 'Copilot', url: 'https://github.com/copilot' }
-};
+const provider = { name: 'ChatGPT', url: 'https://chatgpt.com/' };
 const $ = (id) => document.getElementById(id);
 
 function buildPrompt(question, tables, version) {
@@ -59,7 +56,6 @@ async function copyText(text) {
 
 function installSQLAssistant() {
   const dialog = $('sql-assistant');
-  const provider = providers[dialog.dataset.assistantProvider];
   const trigger = $('ask-assistant');
   for (const label of document.querySelectorAll('[data-chat-name]')) {
     label.textContent = provider.name;

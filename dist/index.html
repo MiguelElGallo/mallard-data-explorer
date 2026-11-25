@@ -13,8 +13,10 @@
     <link rel="preload" as="font" type="font/woff2" href="./assets/fonts/dm-sans.woff2" crossorigin />
     <link rel="stylesheet" href="./styles.css" />
     <script type="module" src="./app.js"></script>
+    <!-- sites-only -->
     <link rel="stylesheet" href="./sql-assistant.css" />
     <script type="module" src="./sql-assistant.js"></script>
+    <!-- /sites-only -->
   </head>
   <body>
     <a href="#main" class="skip">Skip to workspace</a>
@@ -97,6 +99,18 @@
               <p id="page-description">Explore and query files on your machine.</p>
             </div>
             <div class="page-actions">
+              <template id="pages-copilot-link">
+                <a
+                  class="button assistant-trigger"
+                  href="https://github.com/login?return_to=%2Fcopilot"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Sign in to GitHub Copilot (opens in a new tab)"
+                >
+                  Sign in to GitHub Copilot<i data-icon="arrow-up-right"></i>
+                </a>
+              </template>
+              <!-- sites-only -->
               <button
                 type="button"
                 id="ask-assistant"
@@ -107,6 +121,7 @@
               >
                 <i data-icon="sparkles"></i><span>Ask <span data-chat-name></span></span>
               </button>
+              <!-- /sites-only -->
               <button class="button primary" data-act="import">
                 <i data-icon="plus"></i>Import files
               </button>
@@ -282,7 +297,8 @@
     </div>
     <div id="toast" role="status" hidden></div>
     <dialog id="dialog"><div class="dialog-inner" id="dialog-body"></div></dialog>
-    <dialog id="sql-assistant" aria-labelledby="assistant-title" data-assistant-provider="chatgpt">
+    <!-- sites-only -->
+    <dialog id="sql-assistant" aria-labelledby="assistant-title">
       <div class="assistant-heading">
         <span class="assistant-mark"><i data-icon="sparkles"></i></span>
         <h2 id="assistant-title">Ask <span data-chat-name></span></h2>
@@ -389,6 +405,7 @@
         </div>
       </form>
     </dialog>
+    <!-- /sites-only -->
     <input
       id="file-input"
       type="file"
