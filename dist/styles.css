@@ -534,6 +534,15 @@ h1 {
   height: 17px;
   stroke-width: 2;
 }
+.assistant-trigger {
+  background: #edf3e9;
+  border-color: #d2dfcf;
+  color: #345c41;
+  text-decoration: none;
+}
+.assistant-trigger:hover {
+  background: #e2ebdc;
+}
 .subtle {
   background: #fff;
   border-color: var(--line);
@@ -1670,8 +1679,13 @@ dialog p {
     padding: 3px 7px;
   }
   .page-heading {
-    gap: 8px;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
     margin-bottom: 16px;
+  }
+  .page-actions {
+    flex-wrap: wrap;
   }
   .page-heading h1 {
     font-size: 29px;
