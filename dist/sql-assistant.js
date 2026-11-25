@@ -1,7 +1,10 @@
 import { escape, formatNumber } from './view.js';
 import { getSQLContext, reviewSQLDraft } from './app.js';
 
-const chatURL = 'https://chatgpt.com/';
+const providers = {
+  chatgpt: { name: 'ChatGPT', url: 'https://chatgpt.com/' },
+  copilot: { name: 'Copilot', url: 'https://github.com/copilot' }
+};
 const $ = (id) => document.getElementById(id);
 
 function buildPrompt(question, tables, version) {
@@ -56,6 +59,12 @@ async function copyText(text) {
 
 function installSQLAssistant() {
   const dialog = $('sql-assistant');
+  const provider = providers[dialog.dataset.assistantProvider];
+  const trigger = $('ask-assistant');
+  for (const label of document.querySelectorAll('[data-chat-name]')) {
+    label.textContent = provider.name;
+  }
+  $('assistant-chat-link').href = provider.url;
   const question = $('assistant-question');
   const answer = $('assistant-answer');
   const choices = $('schema-choices');
@@ -82,7 +91,7 @@ function installSQLAssistant() {
     const tables = selectedTables();
     $('scope-count').textContent = tables.length + ' selected';
     $('prepared-prompt').value = buildPrompt(question.value, tables, getSQLContext().version);
-    $('launch-chatgpt').disabled = !question.value.trim();
+    $('launch-assistant').disabled = !question.value.trim();
   }
   function renderTables(sources) {
     choices.innerHTML =
@@ -114,8 +123,8 @@ function installSQLAssistant() {
     fallback.value = lastPrompt;
     fallback.hidden = copied;
     $('handoff-message').textContent = copied
-      ? 'Prompt copied. Paste it into your ChatGPT window, send it, and bring the SQL back here.'
-      : 'Select and copy the prompt below, then paste it into your ChatGPT window.';
+      ? `Prompt copied. Paste it into ${provider.name}, send it, and bring the SQL back here.`
+      : `Select and copy the prompt below, then paste it into ${provider.name}.`;
     if (!copied && dialog.open && step === 'reply') {
       fallback.focus();
       fallback.select();
@@ -127,9 +136,9 @@ function installSQLAssistant() {
     if (openChat) {
       // Keep the destination fixed. The prompt travels through the visitor's clipboard.
       try {
-        window.open(chatURL, '_blank', 'popup=yes,width=980,height=800,noopener,noreferrer');
+        window.open(provider.url, '_blank', 'popup=yes,width=980,height=800,noopener,noreferrer');
       } catch {
-        // The return panel also contains a normal ChatGPT link for restricted browser contexts.
+        // The return panel includes a link for browsers that block popups.
       }
     }
     $('assistant-handoff').hidden = false;
@@ -138,7 +147,8 @@ function installSQLAssistant() {
     const ok = await copied;
     if (attempt === copyAttempt) setCopyResult(ok);
   }
-  $('ask-chatgpt').addEventListener('click', showAssistant);
+  trigger.addEventListener('click', showAssistant);
+  trigger.hidden = false;
   $('assistant-close').addEventListener('click', () => dialog.close());
   dialog.addEventListener('click', (event) => {
     if (event.target === dialog) dialog.close();
