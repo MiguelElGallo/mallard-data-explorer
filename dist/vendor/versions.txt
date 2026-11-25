@@ -1,0 +1,9 @@
+Mallard browser runtime
+
+DuckDB 2.0.1
+DuckDB-Wasm package 1.33.1-dev124.0
+Package source: https://github.com/duckdb/duckdb-wasm/tree/e9248155d9ea1bd25ac3043443ae091bf12a876a
+DuckDB engine: https://github.com/duckdb/duckdb/tree/8d78114e90a53823803660bf821f6073ac87da8c
+The browser ES module is bundled with Apache Arrow. worker.js is the base worker, and duckdb-2.0.1.wasm.gz is the gzip-compressed base module.
+The signed JSON and Parquet extensions are from https://extensions.duckdb.org/v2.0.1/wasm_eh/ and are served locally with the application.
+Font and library licenses accompany this file in licenses/.

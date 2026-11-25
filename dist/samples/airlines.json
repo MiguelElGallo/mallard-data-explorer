@@ -1,0 +1,38 @@
+[
+  {
+    "airline": "Delta",
+    "iata": "DL",
+    "full_name": "Delta Air Lines",
+    "hub": "ATL"
+  },
+  {
+    "airline": "United",
+    "iata": "UA",
+    "full_name": "United Airlines",
+    "hub": "ORD"
+  },
+  {
+    "airline": "Alaska",
+    "iata": "AS",
+    "full_name": "Alaska Airlines",
+    "hub": "SEA"
+  },
+  {
+    "airline": "American",
+    "iata": "AA",
+    "full_name": "American Airlines",
+    "hub": "DFW"
+  },
+  {
+    "airline": "Southwest",
+    "iata": "WN",
+    "full_name": "Southwest Airlines",
+    "hub": "BWI"
+  },
+  {
+    "airline": "JetBlue",
+    "iata": "B6",
+    "full_name": "JetBlue Airways",
+    "hub": "JFK"
+  }
+]

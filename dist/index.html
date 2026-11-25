@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#172b25" />
+    <meta
+      name="description"
+      content="Explore local CSV, Parquet, and JSON files in your browser with Mallard and DuckDB-Wasm."
+    />
+    <title>Mallard · Local Data Explorer</title>
+    <link rel="icon" type="image/svg+xml" href="./assets/mallard.svg" />
+    <link rel="preload" as="font" type="font/woff2" href="./assets/fonts/dm-sans.woff2" crossorigin />
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" src="./app.js"></script>
+    <!-- assistant-only -->
+    <link rel="stylesheet" href="./sql-assistant.css" />
+    <script type="module" src="./sql-assistant.js"></script>
+    <!-- /assistant-only -->
+  </head>
+  <body>
+    <a href="#main" class="skip">Skip to workspace</a>
+    <div class="app-shell">
+      <aside id="sidebar" aria-label="Workspace sidebar">
+        <div class="brand">
+          <img src="./assets/mallard.svg" width="38" height="38" alt="" /><span>Mallard</span
+          ><button class="icon-button close-menu" aria-label="Close sidebar" data-act="toggle-menu">
+            <i data-icon="x"></i>
+          </button>
+        </div>
+        <div class="side-body">
+          <div class="side-label">Workspace</div>
+          <nav class="navigation" aria-label="Workspace">
+            <button data-nav="explorer" class="nav-item active" aria-current="page">
+              <i data-icon="compass"></i><span>Data explorer</span>
+            </button>
+            <button data-nav="sql" class="nav-item">
+              <i data-icon="terminal"></i><span>SQL console</span>
+            </button>
+            <button data-nav="history" class="nav-item">
+              <i data-icon="history"></i><span>Query history</span>
+            </button>
+          </nav>
+          <div class="side-section-heading">
+            <span class="side-label">Datasets</span
+            ><button class="icon-button side-icon" data-act="import" aria-label="Import a dataset">
+              <i data-icon="plus"></i>
+            </button>
+          </div>
+          <div id="sources" aria-label="Datasets">
+            <span class="side-loading">Opening workspace…</span>
+          </div>
+        </div>
+        <div class="side-bottom">
+          <button class="drop-box" data-act="import">
+            <i data-icon="folder-in"></i><strong>Drop files here</strong><small>or browse files</small>
+          </button>
+          <div class="engine">
+            <span class="engine-icon"><i data-icon="cpu"></i></span>
+            <div><strong>DuckDB-Wasm</strong><span id="engine-version">Starting engine…</span></div>
+            <span id="engine-light" class="status-dot pending" title="Engine starting"></span>
+          </div>
+        </div>
+      </aside>
+      <button id="scrim" aria-label="Close sidebar" data-act="toggle-menu" hidden></button>
+      <div class="main-shell">
+        <header class="topbar">
+          <div class="crumbs">
+            <button
+              data-act="toggle-menu"
+              class="icon-button panel-toggle"
+              aria-label="Toggle sidebar"
+              aria-controls="sidebar"
+            >
+              <i data-icon="panel"></i></button
+            ><span class="crumb-divider"></span><span>Workspace</span><i data-icon="chevron-right"></i
+            ><strong id="crumb">Data explorer</strong>
+          </div>
+          <div class="top-actions">
+            <span class="session-tag"><span class="status-dot"></span>Local session</span
+            ><span class="top-separator"></span
+            ><a
+              class="repo-link"
+              href="https://github.com/MiguelElGallo/mallard-data-explorer"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="View Mallard source on GitHub"
+              title="View Mallard source on GitHub"
+              ><i data-icon="git-branch"></i><span>GitHub</span></a
+            ><button class="icon-button help-icon" data-act="help" aria-label="Workspace help">
+              <i data-icon="help"></i>
+            </button>
+          </div>
+        </header>
+        <main id="main" tabindex="-1">
+          <div class="page-heading">
+            <div>
+              <h1 id="page-title">Data explorer</h1>
+              <p id="page-description">Explore and query files on your machine.</p>
+            </div>
+            <div class="page-actions">
+              <!-- assistant-only -->
+              <button
+                type="button"
+                id="ask-chatgpt"
+                class="button assistant-trigger"
+                aria-haspopup="dialog"
+              >
+                <i data-icon="sparkles"></i>Ask ChatGPT
+              </button>
+              <!-- /assistant-only -->
+              <button class="button primary" data-act="import">
+                <i data-icon="plus"></i>Import files
+              </button>
+            </div>
+          </div>
+          <div id="startup" role="status">
+            <div class="loading-line"></div>
+            <p>Opening the local database…</p>
+          </div>
+          <section id="explorer-view" aria-label="Data explorer" hidden>
+            <div class="dataset-hero">
+              <div class="hero-art" aria-hidden="true"></div>
+              <div class="hero-content">
+                <div class="eyebrow active-eyebrow"><span></span>Active dataset</div>
+                <h2 id="dataset-title"></h2>
+                <div class="hero-meta">
+                  <span id="hero-filename"></span><span class="hero-separator"></span
+                  ><span id="hero-source"></span>
+                </div>
+              </div>
+            </div>
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-icon rows-icon"><i data-icon="rows"></i></div>
+                <div>
+                  <div class="stat-label">Total rows</div>
+                  <strong id="row-count">—</strong>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon cols-icon"><i data-icon="columns"></i></div>
+                <div>
+                  <div class="stat-label">Columns</div>
+                  <strong id="column-count">—</strong>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon size-icon"><i data-icon="drive"></i></div>
+                <div>
+                  <div class="stat-label">File size</div>
+                  <strong id="file-size">—</strong>
+                </div>
+              </div>
+            </div>
+            <div class="workspace-card">
+              <div class="tabs-bar">
+                <div class="tabs" role="tablist" aria-label="Dataset views">
+                  <button
+                    data-tab="preview"
+                    id="tab-preview"
+                    role="tab"
+                    aria-selected="true"
+                    aria-controls="tab-panel"
+                  >
+                    <i data-icon="table"></i>Preview
+                  </button>
+                  <button
+                    data-tab="schema"
+                    id="tab-schema"
+                    role="tab"
+                    aria-selected="false"
+                    aria-controls="tab-panel"
+                  >
+                    <i data-icon="schema"></i>Schema
+                  </button>
+                  <button
+                    data-tab="profile"
+                    id="tab-profile"
+                    role="tab"
+                    aria-selected="false"
+                    aria-controls="tab-panel"
+                  >
+                    <i data-icon="chart"></i>Profile
+                  </button>
+                </div>
+                <button class="text-button sql-link" data-act="open-sql">
+                  <i data-icon="code"></i>Open in SQL<i
+                    class="link-arrow"
+                    data-icon="arrow-up-right"
+                  ></i>
+                </button>
+              </div>
+              <div id="tab-panel" role="tabpanel" aria-labelledby="tab-preview">
+                <div id="preview-panel">
+                  <div class="table-tools">
+                    <label class="search-field"
+                      ><i data-icon="search"></i
+                      ><input
+                        id="row-search"
+                        type="search"
+                        aria-label="Search rows"
+                        placeholder="Search rows…"
+                        autocomplete="off"
+                      /><kbd>/</kbd></label
+                    >
+                    <div class="tool-buttons">
+                      <button class="button subtle" data-act="filter">
+                        <i data-icon="filter"></i>Filter</button
+                      ><button class="button subtle" data-act="export-source">
+                        <i data-icon="download"></i>Export CSV
+                      </button>
+                    </div>
+                  </div>
+                  <div id="filter-strip" hidden></div>
+                  <div id="source-grid" class="table-region" aria-live="polite" aria-busy="false"></div>
+                  <div id="source-pager"></div>
+                </div>
+                <div id="schema-panel" hidden></div>
+                <div id="profile-panel" hidden></div>
+              </div>
+            </div>
+          </section>
+          <section id="sql-view" aria-label="SQL console" hidden>
+            <div class="workspace-card editor-card">
+              <div class="card-header">
+                <h2><i data-icon="terminal"></i>Query editor</h2>
+                <button id="sql-picker" class="button subtle" data-act="tables">
+                  <i data-icon="database"></i>Tables
+                </button>
+              </div>
+              <div class="editor-wrap">
+                <div id="line-numbers" aria-hidden="true">1</div>
+                <textarea
+                  id="sql-editor"
+                  aria-label="SQL query"
+                  spellcheck="false"
+                  autocapitalize="off"
+                  autocomplete="off"
+                  wrap="off"
+                ></textarea>
+              </div>
+              <div class="editor-footer">
+                <span
+                  ><span class="status-dot"></span>DuckDB SQL
+                  <button
+                    type="button"
+                    class="text-button"
+                    id="restore-sql"
+                    data-act="restore-sql"
+                    hidden
+                  >
+                    Undo replacement
+                  </button> </span
+                ><button id="run-query" class="button primary" data-act="run">
+                  <i data-icon="play"></i><span id="run-label">Run query</span><kbd></kbd>
+                </button>
+              </div>
+            </div>
+            <section class="workspace-card result-card" aria-label="Query results">
+              <div class="card-header">
+                <h2><i data-icon="table"></i>Results</h2>
+                <div class="tool-buttons">
+                  <span id="result-timing" class="muted mono"></span
+                  ><button class="button subtle" id="export-result" data-act="export-result" hidden>
+                    <i data-icon="download"></i>Export CSV
+                  </button>
+                </div>
+              </div>
+              <div id="result-grid" class="table-region" aria-live="polite"></div>
+              <div id="result-pager"></div>
+            </section>
+          </section>
+          <section id="history-view" class="workspace-card" aria-label="Query history" hidden></section>
+        </main>
+      </div>
+    </div>
+    <div id="drag-overlay" hidden>
+      <div>
+        <i data-icon="folder-in"></i>
+        <h2>Drop to import</h2>
+        <p>Files open in your browser.</p>
+      </div>
+    </div>
+    <div id="toast" role="status" hidden></div>
+    <dialog id="dialog"><div class="dialog-inner" id="dialog-body"></div></dialog>
+    <!-- assistant-only -->
+    <dialog id="sql-assistant" aria-labelledby="assistant-title">
+      <div class="assistant-heading">
+        <span class="assistant-mark"><i data-icon="sparkles"></i></span>
+        <h2 id="assistant-title">Ask ChatGPT</h2>
+        <button type="button" class="icon-button" id="assistant-close" aria-label="Close SQL assistant">
+          <i data-icon="x"></i>
+        </button>
+      </div>
+      <div class="assistant-steps" role="group" aria-label="SQL assistant steps">
+        <button type="button" id="choose-compose" aria-pressed="true" aria-controls="assistant-compose">
+          <i data-icon="braces"></i>Prepare prompt
+        </button>
+        <button type="button" id="choose-reply" aria-pressed="false" aria-controls="assistant-return">
+          <i data-icon="terminal"></i>Paste SQL
+        </button>
+      </div>
+      <form id="assistant-compose" class="assistant-panel">
+        <label class="assistant-label" for="assistant-question">What would you like to explore?</label>
+        <textarea
+          id="assistant-question"
+          class="assistant-input"
+          rows="3"
+          placeholder="Describe the result you want…"
+          required
+        ></textarea>
+        <div class="assistant-ideas" aria-label="Example questions">
+          <button type="button" data-idea="summary">Summarize</button>
+          <button type="button" data-idea="duplicates">Find duplicates</button>
+          <button type="button" data-idea="missing">Check missing values</button>
+        </div>
+        <details class="assistant-details" id="assistant-scope">
+          <summary>
+            <i data-icon="database"></i><span>Table schemas</span><small id="scope-count"></small
+            ><i data-icon="chevron-right"></i>
+          </summary>
+          <fieldset id="schema-choices" aria-label="Tables to include in the prompt"></fieldset>
+        </details>
+        <details class="assistant-details" id="assistant-preview">
+          <summary>
+            <i data-icon="file"></i><span>Preview prompt</span><i data-icon="chevron-right"></i>
+          </summary>
+          <textarea
+            class="assistant-code"
+            id="prepared-prompt"
+            aria-label="Prepared prompt"
+            rows="7"
+            readonly
+          ></textarea>
+        </details>
+        <p class="assistant-privacy">
+          <i data-icon="shield"></i
+          ><span
+            >The prompt includes your question and the selected table names, column names, and types.
+            Data rows stay in Mallard.</span
+          >
+        </p>
+        <div class="assistant-footer">
+          <button type="submit" class="button primary" id="launch-chatgpt">
+            Copy prompt &amp; open ChatGPT<i data-icon="arrow-up-right"></i>
+          </button>
+        </div>
+      </form>
+      <form id="assistant-return" class="assistant-panel" hidden>
+        <div class="assistant-handoff" id="assistant-handoff" hidden>
+          <p id="handoff-message" role="status"></p>
+          <div class="handoff-links">
+            <button type="button" class="text-button" id="copy-prepared">Copy prompt again</button>
+            <a
+              class="text-button"
+              href="https://chatgpt.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              referrerpolicy="no-referrer"
+              >Open ChatGPT<i data-icon="arrow-up-right"></i
+            ></a>
+          </div>
+          <textarea
+            class="assistant-code"
+            id="manual-copy"
+            aria-label="Prompt to copy manually"
+            rows="5"
+            readonly
+            hidden
+          ></textarea>
+        </div>
+        <label class="assistant-label" for="assistant-answer">SQL from ChatGPT</label>
+        <textarea
+          class="assistant-input assistant-code"
+          id="assistant-answer"
+          rows="6"
+          placeholder="Paste a SQL query or a ChatGPT reply with one SQL code block…"
+          spellcheck="false"
+          autocapitalize="off"
+          required
+        ></textarea>
+        <p class="assistant-error" id="assistant-error" role="alert" hidden></p>
+        <p class="assistant-privacy">
+          <i data-icon="terminal"></i
+          ><span>Review the draft in the SQL console, then choose Run query when you’re ready.</span>
+        </p>
+        <div class="assistant-footer">
+          <button type="submit" class="button primary" id="use-assistant-sql">
+            Use in SQL editor<i data-icon="chevron-right"></i>
+          </button>
+        </div>
+      </form>
+    </dialog>
+    <!-- /assistant-only -->
+    <input
+      id="file-input"
+      type="file"
+      accept=".duckdb,.csv,.tsv,.parquet,.pq,.json,.ndjson,.jsonl"
+      multiple
+      hidden
+    />
+    <noscript>Mallard needs JavaScript to run DuckDB on your device.</noscript>
+  </body>
+</html>
